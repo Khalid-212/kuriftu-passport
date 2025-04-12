@@ -2,7 +2,21 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const swaggerUi = require("swagger-ui-express");
-require("dotenv").config();
+const dotenv = require("dotenv");
+
+// Load environment variables from the root directory
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
+// Check for required environment variables
+const requiredEnvVars = ["PORT", "DATABASE_URL", "JWT_SECRET"];
+const missingEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+  console.error(
+    `Missing required environment variables: ${missingEnvVars.join(", ")}`
+  );
+  process.exit(1);
+}
 
 const sequelize = require("./config/database");
 const swaggerSpec = require("./config/swagger");
@@ -49,27 +63,17 @@ app.use("/api/bookings", bookingsRoutes);
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
-    status: "error",
-    message: "Something went wrong!",
+    success: false,
+    message: "Internal Server Error",
     error: process.env.NODE_ENV === "development" ? err.message : undefined,
   });
 });
 
+// Start the server
 const PORT = process.env.PORT || 3000;
-
-// Database connection and server start
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Database connection established successfully.");
-    // Don't sync or alter tables since they already exist
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-      console.log(
-        `API Documentation available at http://localhost:${PORT}/api-docs`
-      );
-    });
-  })
-  .catch((err) => {
-    console.error("Unable to connect to the database:", err);
-  });
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+  console.log(
+    `API Documentation available at http://localhost:${PORT}/api-docs`
+  );
+});
