@@ -12,6 +12,7 @@ const authRoutes = require("./features/auth/routes");
 const roomsRoutes = require("./features/rooms/routes");
 const activitiesRoutes = require("./features/activities/routes");
 const loyaltyRoutes = require("./features/loyalty/routes");
+const bookingsRoutes = require("./features/bookings/routes");
 
 const app = express();
 
@@ -27,17 +28,22 @@ app.use(
 );
 
 // Swagger Documentation
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  explorer: true,
-  customCss: ".swagger-ui .topbar { display: none }",
-  customSiteTitle: "Kuriftu Passport API Documentation"
-}));
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    explorer: true,
+    customCss: ".swagger-ui .topbar { display: none }",
+    customSiteTitle: "Kuriftu Passport API Documentation",
+  })
+);
 
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/rooms", roomsRoutes);
 app.use("/api/activities", activitiesRoutes);
 app.use("/api/loyalty", loyaltyRoutes);
+app.use("/api/bookings", bookingsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -59,7 +65,9 @@ sequelize
     // Don't sync or alter tables since they already exist
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
-      console.log(`API Documentation available at http://localhost:${PORT}/api-docs`);
+      console.log(
+        `API Documentation available at http://localhost:${PORT}/api-docs`
+      );
     });
   })
   .catch((err) => {
