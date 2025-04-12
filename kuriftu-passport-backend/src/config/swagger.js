@@ -14,8 +14,12 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
+        url: process.env.BACKEND_URL_DEVELOPMENT,
         description: "Development server",
+      },
+      {
+        url: process.env.BACKEND_URL_PRODUCTION,
+        description: "Production server",
       },
     ],
     components: {
